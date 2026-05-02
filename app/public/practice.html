@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JEE Advanced PYQ Practice</title>
+    <link rel="stylesheet" href="/practice.css" />
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+        options: { skipHtmlTags: ["script", "noscript", "style", "textarea", "pre"] },
+        startup: {
+          ready: () => {
+            MathJax.startup.defaultReady();
+            window.mathJaxReady = MathJax.startup.promise;
+          }
+        }
+      };
+    </script>
+    <script async src="/vendor/mathjax/es5/tex-chtml.js"></script>
+  </head>
+  <body>
+    <header class="siteHeader">
+      <div>
+        <p>JEE Advanced PYQs</p>
+        <h1>Practice</h1>
+      </div>
+      <nav>
+        <a href="/">Extractor</a>
+        <a href="/api/questions" target="_blank">Database</a>
+      </nav>
+    </header>
+
+    <main class="practiceShell">
+      <aside class="filters" aria-label="Question filters">
+        <div class="filterGroup">
+          <label>Exam<select id="examFilter"></select></label>
+          <label>Subject<select id="subjectFilter"></select></label>
+          <label>Year<select id="yearFilter"></select></label>
+          <label>Difficulty<select id="difficultyFilter"></select></label>
+          <label>Question type<select id="typeFilter"></select></label>
+          <label>Search<input id="searchFilter" placeholder="Topic, text, tag" /></label>
+        </div>
+        <div class="summary">
+          <strong id="visibleCount">0</strong>
+          <span>questions visible</span>
+        </div>
+      </aside>
+
+      <section class="questionArea">
+        <div class="toolbar">
+          <div>
+            <h2>Question preview</h2>
+            <p>This page reads from the same local database used by the extractor.</p>
+          </div>
+          <button id="resetFilters" type="button">Reset filters</button>
+        </div>
+        <div id="emptyState" class="emptyState" hidden>
+          Add questions in the extractor, mark them reviewed or published-ready, and they will appear here.
+        </div>
+        <div id="questionList" class="questionList"></div>
+      </section>
+    </main>
+
+    <template id="questionTemplate">
+      <article class="questionCard">
+        <div class="questionMeta"></div>
+        <div class="questionText"></div>
+        <div class="belowFigures"></div>
+        <div class="options"></div>
+        <div class="attemptPanel" hidden></div>
+        <div class="cardActions">
+          <button type="button" class="submitAnswer">Submit answer</button>
+          <button type="button" class="showAnswer">Show answer</button>
+          <button type="button" class="showSolution">Show solution</button>
+        </div>
+        <div class="answerPanel" hidden></div>
+        <div class="solutionPanel" hidden></div>
+      </article>
+    </template>
+
+    <script src="/practice.js"></script>
+  </body>
+</html>

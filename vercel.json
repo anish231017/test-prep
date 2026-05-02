@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/vendor/mathjax/(.*)", "destination": "/api/vendor/mathjax/[...path]?path=$1" },
+    { "source": "/admin/extractor", "destination": "/app/public/index.html" },
+    { "source": "/admin/exams", "destination": "/app/public/exams.html" },
+    { "source": "/practice", "destination": "/app/public/practice.html" },
+    { "source": "/(.*)", "destination": "/app/public/$1" }
+  ]
+}

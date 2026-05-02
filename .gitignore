@@ -1,0 +1,22 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+dist/
+.vercel/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Local Assets (Large PDF folders)
+Jee Advance/
+papers/

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Exams</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Admin</p>
+        <h1>Manage Exams</h1>
+      </div>
+      <div class="stats">
+        <a href="/admin/extractor">Extractor</a>
+        <a href="/practice">Practice site</a>
+      </div>
+    </header>
+    <section class="authBar" data-auth-bar></section>
+
+    <main class="adminShell">
+      <section class="panel">
+        <form id="examForm">
+          <div class="formHeader">
+            <div>
+              <h2>Add exam</h2>
+              <p>Only admins can create exams. Editors can use active exams from the extractor.</p>
+            </div>
+            <button type="submit" class="primary">Save exam</button>
+          </div>
+          <div class="grid three">
+            <label>Name<input id="examName" placeholder="e.g. NEET" required /></label>
+            <label>Slug<input id="examSlug" placeholder="auto-generated if blank" /></label>
+            <label>Description<input id="examDescription" placeholder="Optional" /></label>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="sectionTitle">
+          <h3>Active exams</h3>
+          <button type="button" id="refreshExams">Refresh</button>
+        </div>
+        <div id="examList" class="examList"></div>
+      </section>
+    </main>
+
+    <script src="/auth.js"></script>
+    <script src="/exams.js"></script>
+  </body>
+</html>

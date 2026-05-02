@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PYQ Data Extractor</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Test Prep Database Builder</p>
+        <h1>PYQ Data Extractor</h1>
+      </div>
+      <div class="stats">
+        <span id="questionCount">0 questions</span>
+        <a href="/admin/exams">Manage exams</a>
+        <a href="/practice" target="_blank">Practice site</a>
+        <a href="/api/questions" target="_blank">JSON</a>
+        <a href="/api/export/questions.ndjson" target="_blank" id="ndjsonLink">NDJSON</a>
+      </div>
+    </header>
+    <section class="authBar" data-auth-bar></section>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <div class="panel">
+          <label for="paperSelect">Source paper</label>
+          <div class="paper-actions">
+            <select id="paperSelect">
+              <option value="">No folder selected</option>
+            </select>
+            <button type="button" id="uploadFolderBtn" title="Select Folder">📁</button>
+            <button type="button" id="uploadPaperBtn" title="Select File">＋</button>
+          </div>
+          <input type="file" id="paperFileInput" accept="application/pdf" hidden />
+          <input type="file" id="paperFolderInput" webkitdirectory directory hidden />
+          <div id="dropZone" class="drop-zone">
+            <span>Drag & Drop PDF here</span>
+            <small>or click the ＋ button</small>
+          </div>
+          <iframe id="paperFrame" title="Selected question paper"></iframe>
+        </div>
+      </aside>
+
+      <div class="resizer" id="resizer1"></div>
+
+      <section class="editor">
+        <form id="questionForm">
+          <div class="formHeader">
+            <div>
+              <h2>Question record</h2>
+              <p>Save each question with clean metadata, ordered figures, answer, and solution.</p>
+            </div>
+            <div class="actions">
+              <button type="button" id="newButton">New</button>
+              <button type="submit" class="primary">Save question</button>
+              <button type="button" id="toggleRecords" title="Toggle Sidebar">◂▸</button>
+            </div>
+          </div>
+
+          <input type="hidden" id="recordId" />
+          <!-- ... rest of form ... -->
+
+          <div class="grid four">
+            <label>Exam
+              <select id="examSelect"></select>
+              <input id="exam" value="JEE Advanced" hidden />
+            </label>
+            <label>Year<input id="year" type="number" min="1900" max="2100" /></label>
+            <label>Paper<input id="paper" /></label>
+            <label>Question no.<input id="questionNumber" placeholder="e.g. 12" /></label>
+          </div>
+
+          <div class="grid four">
+            <label>Subject
+              <select id="subject">
+                <option value="">Select</option>
+                <option>Physics</option>
+                <option>Chemistry</option>
+                <option>Mathematics</option>
+              </select>
+            </label>
+            <label>Topic<input id="topic" placeholder="e.g. Electrostatics" /></label>
+            <label>Subtopic<input id="subtopic" placeholder="Optional" /></label>
+            <label>Difficulty
+              <select id="difficulty">
+                <option value="">Select</option>
+                <option>Easy</option>
+                <option>Medium</option>
+                <option>Hard</option>
+                <option>Very Hard</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="grid four">
+            <label>Type
+              <select id="type">
+                <option value="">Select</option>
+                <option>Single Correct</option>
+                <option>Multiple Correct</option>
+                <option>Numerical</option>
+                <option>Integer</option>
+                <option>Matrix Match</option>
+                <option>Paragraph Based</option>
+              </select>
+            </label>
+            <label>Correct marks<input id="marksCorrect" type="number" step="0.01" /></label>
+            <label>Negative marks<input id="marksNegative" type="number" step="0.01" /></label>
+            <label>Partial marks<input id="marksPartial" type="number" step="0.01" /></label>
+          </div>
+
+          <label>Question text
+            <textarea id="questionText" rows="7" placeholder="Type the question. Insert figure markers like [[fig:ray-diagram]] where inline images should appear."></textarea>
+          </label>
+
+          <section class="toolPanel">
+            <div class="sectionTitle">
+              <h3>Figures</h3>
+              <button type="button" id="addFigure">Add figure</button>
+            </div>
+            <div id="figures"></div>
+          </section>
+
+          <section class="toolPanel">
+            <div class="sectionTitle">
+              <h3>Options</h3>
+              <button type="button" id="addOption">Add option</button>
+            </div>
+            <div id="options"></div>
+          </section>
+
+          <div class="grid two">
+            <label>Answer<input id="answerValue" placeholder="e.g. A,C or 3.75" /></label>
+            <label>Tags<input id="tags" placeholder="comma separated, e.g. pyq, concept-heavy" /></label>
+          </div>
+
+          <label>Answer explanation
+            <textarea id="answerExplanation" rows="3"></textarea>
+          </label>
+
+          <label>Full solution
+            <textarea id="solutionText" rows="8" placeholder="Detailed solution for students."></textarea>
+          </label>
+
+          <div class="grid three">
+            <label>PDF page<input id="sourcePage" placeholder="e.g. 4" /></label>
+            <label>Status
+              <select id="status">
+                <option>draft</option>
+                <option>reviewed</option>
+                <option>published-ready</option>
+              </select>
+            </label>
+            <label>Language<input id="language" value="English" /></label>
+          </div>
+        </form>
+      </section>
+
+      <div class="resizer" id="resizer2"></div>
+
+      <aside class="records" id="recordsSidebar">
+        <div class="panel">
+          <div class="sectionTitle">
+            <h3>Saved records</h3>
+            <div class="filter-row">
+              <select id="statusFilter">
+                <option value="">All Status</option>
+                <option value="draft">Draft</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="published-ready">Published</option>
+              </select>
+              <input id="search" placeholder="Search" />
+            </div>
+          </div>
+          <div id="recordList"></div>
+        </div>
+      </aside>
+    </main>
+
+    <template id="optionTemplate">
+      <div class="optionRow">
+        <input class="optionLabel" placeholder="A" />
+        <textarea class="optionText" rows="2" placeholder="Option text, LaTeX supported"></textarea>
+        <div class="optionImagePreview">No image</div>
+        <div class="optionControls">
+          <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="optionImageFile" />
+          <label class="check"><input type="checkbox" class="optionCorrect" /> Correct</label>
+          <button type="button" class="remove">Remove</button>
+        </div>
+      </div>
+    </template>
+
+    <template id="figureTemplate">
+      <div class="figureRow">
+        <div class="figurePreview"></div>
+        <div class="figureControls">
+          <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="figureFile" />
+          <div class="grid four">
+            <label>Placement
+              <select class="figurePlacement">
+                <option value="below">Below text</option>
+                <option value="inline">Inline</option>
+              </select>
+            </label>
+            <label>Marker<input class="figureMarker" placeholder="fig-1" /></label>
+            <label>After paragraph<input type="number" min="0" value="0" class="figurePosition" /></label>
+            <label>Alt text<input class="figureAlt" /></label>
+          </div>
+          <input class="figureCaption" placeholder="Caption, if any" />
+          <div class="figureActions">
+            <button type="button" class="insertMarker">Insert marker</button>
+            <button type="button" class="remove">Remove figure</button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <script src="/auth.js"></script>
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+        options: { skipHtmlTags: ["script", "noscript", "style", "textarea", "pre"] }
+      };
+    </script>
+    <script async src="/vendor/mathjax/es5/tex-chtml.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
