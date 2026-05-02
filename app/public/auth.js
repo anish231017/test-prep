@@ -124,6 +124,9 @@ const PYQAuth = (() => {
       try {
         await signIn(email, password);
         await refresh();
+        if (typeof window.showToast === "function") {
+          window.showToast("Login successful. Welcome back!");
+        }
       } catch (error) {
         status.innerHTML = `<span class="authWarning">${error.message}</span>`;
       }
