@@ -324,7 +324,7 @@ function renderRecords() {
       card.querySelector('[data-action="delete"]').addEventListener("click", async () => {
         if (!confirm("Delete this question record?")) return;
         try {
-          await fetchJson(`/api/questions/${encodeURIComponent(question.id)}/status`, {
+          await fetchJson(`/api/questions/${encodeURIComponent(question.id)}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "deleted" })
