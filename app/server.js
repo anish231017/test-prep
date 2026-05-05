@@ -405,6 +405,18 @@ async function handleApi(req, res, url) {
     return send(res, 200, { question });
   }
 
+  if (url.pathname.startsWith("/api/questions/") && url.pathname.endsWith("/status") && req.method === "PUT") {
+    const id = decodeURIComponent(url.pathname.split("/")[3]);
+    const raw = await parseBody(req);
+    const input = JSON.parse(raw || "{}");
+    const existing = await findQuestion(id);
+    if (!existing) return send(res, 404, { error: "Not found" });
+    
+    existing.status = input.status || "deleted";
+    await saveQuestion(existing);
+    return send(res, 200, { success: true });
+  }
+
   if (url.pathname.startsWith("/api/questions/") && req.method === "DELETE") {
     const id = decodeURIComponent(url.pathname.split("/").pop());
     const deleted = await deleteQuestion(id);

@@ -303,7 +303,7 @@ function renderRecords() {
   questions
     .filter((q) => {
       const matchesSearch = !query || JSON.stringify(q).toLowerCase().includes(query);
-      const matchesStatus = !statusFilter || q.status === statusFilter;
+      const matchesStatus = statusFilter ? q.status === statusFilter : q.status !== "deleted";
       return matchesSearch && matchesStatus;
     })
     .slice()
@@ -323,7 +323,11 @@ function renderRecords() {
       card.querySelector('[data-action="edit"]').addEventListener("click", () => writeForm(question));
       card.querySelector('[data-action="delete"]').addEventListener("click", async () => {
         if (!confirm("Delete this question record?")) return;
-        await fetchJson(`/api/questions/${encodeURIComponent(question.id)}`, { method: "DELETE" });
+        await fetchJson(`/api/questions/${encodeURIComponent(question.id)}/status`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "deleted" })
+        });
         await loadQuestions();
         showToast("Question deleted.");
       });

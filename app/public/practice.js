@@ -84,6 +84,7 @@ function filteredQuestions() {
   const search = $("searchFilter").value.trim().toLowerCase();
 
   return questions.filter((question) => {
+    if (question.status === "deleted") return false;
     if (exam && question.exam !== exam) return false;
     if (subject && question.subject !== subject) return false;
     if (year && String(question.year) !== year) return false;
