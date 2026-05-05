@@ -395,7 +395,7 @@ function responseMode(question) {
   const type = String(question.type || "").toLowerCase();
   if (type.includes("integer") || type.includes("numerical")) return "integer";
   if (type.includes("multiple") || type.includes("multi")) return "multi";
-  if (type.includes("single")) return "single";
+  if (type.includes("single") || type.includes("match") || type.includes("matrix") || type.includes("paragraph")) return "single";
   return "none";
 }
 
