@@ -1,5 +1,5 @@
-const { requireRole } = require("../_lib/auth");
-const { supabaseFetch, sendJson } = require("../_lib/supabase-rest");
+const { requireRole } = require("../../_lib/auth");
+const { supabaseFetch, sendJson } = require("../../_lib/supabase-rest");
 
 module.exports = async function handler(req, res) {
   try {
