@@ -323,13 +323,18 @@ function renderRecords() {
       card.querySelector('[data-action="edit"]').addEventListener("click", () => writeForm(question));
       card.querySelector('[data-action="delete"]').addEventListener("click", async () => {
         if (!confirm("Delete this question record?")) return;
-        await fetchJson(`/api/questions/${encodeURIComponent(question.id)}/status`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: "deleted" })
-        });
-        await loadQuestions();
-        showToast("Question deleted.");
+        try {
+          await fetchJson(`/api/questions/${encodeURIComponent(question.id)}/status`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "deleted" })
+          });
+          await loadQuestions();
+          showToast("Question deleted.");
+        } catch (err) {
+          alert("Failed to delete: " + err.message);
+          console.error(err);
+        }
       });
       list.appendChild(card);
     });
