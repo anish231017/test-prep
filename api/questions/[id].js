@@ -1,4 +1,4 @@
-const { requireRole, getActor } = require("../_lib/auth");
+const { requireRole } = require("../_lib/auth");
 const { supabaseFetch, sendJson } = require("../_lib/supabase-rest");
 const { findQuestion, questionToSupabaseRow } = require("../_lib/questions");
 

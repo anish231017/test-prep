@@ -323,18 +323,13 @@ function renderRecords() {
       card.querySelector('[data-action="edit"]').addEventListener("click", () => writeForm(question));
       card.querySelector('[data-action="delete"]').addEventListener("click", async () => {
         if (!confirm("Delete this question record?")) return;
-        try {
-          await fetchJson(`/api/questions/${encodeURIComponent(question.id)}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "deleted" })
-          });
-          await loadQuestions();
-          showToast("Question deleted.");
-        } catch (err) {
-          alert("Failed to delete: " + err.message);
-          console.error(err);
-        }
+        await fetchJson(`/api/questions/${encodeURIComponent(question.id)}/status`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "deleted" })
+        });
+        await loadQuestions();
+        showToast("Question deleted.");
       });
       list.appendChild(card);
     });
@@ -453,7 +448,7 @@ async function init() {
 
   function handleLocalPdfs(files) {
     if (!files.length) return;
-    
+
     // Clear the "No folder selected" option if it's the first time
     if ($("paperSelect").options[0]?.value === "") {
       $("paperSelect").innerHTML = "";
@@ -467,7 +462,7 @@ async function init() {
       const displayPath = file.webkitRelativePath || file.name;
       option.textContent = `📄 ${displayPath}`;
       $("paperSelect").appendChild(option);
-      
+
       // Store info in papers array
       papers.push({
         fileName: file.name,

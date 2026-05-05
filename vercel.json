@@ -1,6 +1,10 @@
 {
   "version": 2,
   "rewrites": [
+    { "source": "/api/me", "destination": "/api/info?route=me" },
+    { "source": "/api/backend", "destination": "/api/info?route=backend" },
+    { "source": "/api/config", "destination": "/api/info?route=config" },
+    { "source": "/api/paper", "destination": "/api/papers?action=download" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/vendor/mathjax/(.*)", "destination": "/api/vendor/mathjax/[...path]?path=$1" },
     { "source": "/admin/extractor", "destination": "/app/public/index.html" },
