@@ -183,7 +183,21 @@ function renderQuestion(question) {
 
   const solutionPanel = node.querySelector(".solutionPanel");
   solutionPanel.hidden = !solutionVisible.has(question.id);
-  solutionPanel.innerHTML = `<strong>Solution:</strong><br>${formatText(question.solutionText || "Solution has not been added yet.")}`;
+  solutionPanel.innerHTML = "";
+  const solHeader = document.createElement("strong");
+  solHeader.textContent = "Solution:";
+  solutionPanel.appendChild(solHeader);
+  solutionPanel.appendChild(document.createElement("br"));
+  
+  if (question.solutionText) {
+    const solWrapper = renderRichText(question.solutionText, question.solutionFigures || []);
+    solutionPanel.appendChild(solWrapper);
+    const belowWrapper = document.createElement("div");
+    renderBelowFigures(belowWrapper, { figures: question.solutionFigures || [] });
+    solutionPanel.appendChild(belowWrapper);
+  } else {
+    solutionPanel.appendChild(document.createTextNode("Solution has not been added yet."));
+  }
 
   node.querySelector(".showAnswer").textContent = answerVisible.has(question.id) ? "Hide answer" : "Show answer";
   node.querySelector(".showAnswer").addEventListener("click", () => toggle(answerVisible, question.id));
@@ -192,10 +206,10 @@ function renderQuestion(question) {
   return node;
 }
 
-function renderQuestionText(question) {
+function renderRichText(text, figures) {
   const wrapper = document.createElement("div");
-  const figuresByMarker = new Map((question.figures || []).map((figure) => [figure.marker, figure]));
-  const parts = normalizeLatexText(question.questionText).split(
+  const figuresByMarker = new Map((figures || []).map((figure) => [figure.marker, figure]));
+  const parts = normalizeLatexText(text).split(
     /(\[\[fig:[a-z0-9-]+\]\]|\$\$(?:.|\n)*?\$\$|\\\[(?:.|\n)*?\\\]|\$[^$]+\$|\\\((?:.|\n)*?\\\))/g
   );
 
@@ -239,6 +253,10 @@ function renderQuestionText(question) {
   });
 
   return wrapper;
+}
+
+function renderQuestionText(question) {
+  return renderRichText(question.questionText, question.figures);
 }
 
 function createMathElement(latex, block) {

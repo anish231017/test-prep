@@ -139,6 +139,46 @@ function addFigure(figure = {}) {
   $("figures").appendChild(node);
 }
 
+function addSolutionFigure(figure = {}) {
+  const node = $("figureTemplate").content.firstElementChild.cloneNode(true);
+  const preview = node.querySelector(".figurePreview");
+  const fileInput = node.querySelector(".figureFile");
+  const markerInput = node.querySelector(".figureMarker");
+
+  node.classList.remove("figureRow");
+  node.classList.add("solutionFigureRow");
+
+  node.dataset.figureId = figure.id || crypto.randomUUID();
+  node.dataset.url = figure.url || "";
+  node.dataset.dataUrl = figure.dataUrl || "";
+  node.dataset.originalName = figure.originalName || "";
+  node.querySelector(".figurePlacement").value = figure.placement || "below";
+  markerInput.value = figure.marker || `sol-fig-${document.querySelectorAll(".solutionFigureRow").length + 1}`;
+  node.querySelector(".figurePosition").value = figure.positionAfterParagraph || 0;
+  node.querySelector(".figureAlt").value = figure.alt || "";
+  node.querySelector(".figureCaption").value = figure.caption || "";
+
+  renderFigurePreview(preview, figure.url || figure.dataUrl);
+
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    node.dataset.dataUrl = await fileToDataUrl(file);
+    node.dataset.url = "";
+    node.dataset.originalName = file.name;
+    renderFigurePreview(preview, node.dataset.dataUrl);
+  });
+
+  node.querySelector(".insertMarker").addEventListener("click", () => {
+    const marker = slugify(markerInput.value) || "sol-fig-1";
+    markerInput.value = marker;
+    node.querySelector(".figurePlacement").value = "inline";
+    insertAtCursor($("solutionText"), `[[fig:${marker}]]`);
+  });
+  node.querySelector(".remove").addEventListener("click", () => node.remove());
+  $("solutionFigures").appendChild(node);
+}
+
 function renderFigurePreview(container, source) {
   container.innerHTML = "";
   if (!source) {
@@ -231,6 +271,17 @@ function readForm() {
       alt: row.querySelector(".figureAlt").value,
       caption: row.querySelector(".figureCaption").value
     })),
+    solutionFigures: [...document.querySelectorAll(".solutionFigureRow")].map((row) => ({
+      id: row.dataset.figureId,
+      url: row.dataset.url,
+      dataUrl: row.dataset.dataUrl,
+      originalName: row.dataset.originalName,
+      placement: row.querySelector(".figurePlacement").value,
+      marker: slugify(row.querySelector(".figureMarker").value),
+      positionAfterParagraph: row.querySelector(".figurePosition").value,
+      alt: row.querySelector(".figureAlt").value,
+      caption: row.querySelector(".figureCaption").value
+    })),
     answer: {
       value: $("answerValue").value,
       explanation: $("answerExplanation").value
@@ -275,6 +326,9 @@ function writeForm(question) {
 
   $("figures").innerHTML = "";
   (question.figures || []).forEach(addFigure);
+
+  $("solutionFigures").innerHTML = "";
+  (question.solutionFigures || []).forEach(addSolutionFigure);
 }
 
 function resetForm() {
@@ -289,6 +343,7 @@ function resetForm() {
   $("status").value = "draft";
   $("options").innerHTML = "";
   $("figures").innerHTML = "";
+  $("solutionFigures").innerHTML = "";
   ["A", "B", "C", "D"].forEach((label) => addOption({ label }));
   if (current) setPaper(current);
 }
@@ -401,6 +456,7 @@ async function init() {
   $("examSelect").addEventListener("change", syncExamInput);
   $("addOption").addEventListener("click", () => addOption());
   $("addFigure").addEventListener("click", () => addFigure());
+  $("addSolutionFigure").addEventListener("click", () => addSolutionFigure());
   $("newButton").addEventListener("click", resetForm);
   $("search").addEventListener("input", renderRecords);
   $("statusFilter").addEventListener("change", renderRecords);

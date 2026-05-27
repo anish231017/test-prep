@@ -306,6 +306,7 @@ function normalizeQuestion(input, existing = {}) {
         .filter((option) => option.label || option.text || option.image)
       : [],
     figures: Array.isArray(input.figures) ? input.figures : [],
+    solutionFigures: Array.isArray(input.solutionFigures) ? input.solutionFigures : [],
     answer: {
       value: cleanText(input.answer?.value),
       explanation: cleanText(input.answer?.explanation)
@@ -400,6 +401,7 @@ async function handleApi(req, res, url) {
     const existing = await findQuestion(input.id);
     let question = normalizeQuestion(input, existing);
     question.figures = await Promise.all((input.figures || []).map((figure, index) => saveAsset(question.id, figure, index)));
+    question.solutionFigures = await Promise.all((input.solutionFigures || []).map((figure, index) => saveAsset(question.id, figure, index)));
     question.options = await Promise.all(question.options.map((option, index) => saveOptionImage(question.id, option, index)));
     await saveQuestion(question);
     return send(res, 200, { question });

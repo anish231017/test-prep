@@ -141,8 +141,16 @@
           </label>
 
           <label>Full solution
-            <textarea id="solutionText" rows="8" placeholder="Detailed solution for students."></textarea>
+            <textarea id="solutionText" rows="8" placeholder="Detailed solution for students. Insert figure markers like [[fig:sol-diagram]] where inline images should appear."></textarea>
           </label>
+
+          <section class="toolPanel">
+            <div class="sectionTitle">
+              <h3>Solution Figures</h3>
+              <button type="button" id="addSolutionFigure">Add solution figure</button>
+            </div>
+            <div id="solutionFigures"></div>
+          </section>
 
           <div class="grid three">
             <label>PDF page<input id="sourcePage" placeholder="e.g. 4" /></label>
