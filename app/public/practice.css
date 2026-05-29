@@ -415,7 +415,6 @@ button:hover {
   align-items: center;
   gap: 1px;
   max-width: 100%;
-  overflow-x: auto;
   color: #111827;
   font-family: "Times New Roman", serif;
   font-size: 1.08em;
@@ -434,6 +433,7 @@ button:hover {
   border: 1px solid #edf1ee;
   border-radius: 8px;
   font-size: 1.22em;
+  overflow-x: auto;
 }
 
 .mjx-container[jax="CHTML"] {

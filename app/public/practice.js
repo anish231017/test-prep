@@ -354,11 +354,29 @@ function renderResponseControl(container, question, mode, showCorrect) {
   });
 }
 
+function stripMathDelimiters(val) {
+  let cleaned = val.trim();
+  if (cleaned.startsWith("$$") && cleaned.endsWith("$$")) {
+    return cleaned.slice(2, -2);
+  }
+  if (cleaned.startsWith("$") && cleaned.endsWith("$")) {
+    return cleaned.slice(1, -1);
+  }
+  if (cleaned.startsWith("\\[") && cleaned.endsWith("\\]")) {
+    return cleaned.slice(2, -2);
+  }
+  if (cleaned.startsWith("\\(") && cleaned.endsWith("\\)")) {
+    return cleaned.slice(2, -2);
+  }
+  return cleaned;
+}
+
 function renderInlineMathText(text) {
   const wrapper = document.createElement("span");
   const value = normalizeLatexText(text).trim();
   if (looksLikeStandaloneLatex(value)) {
-    wrapper.appendChild(createMathElement(value, false));
+    const stripped = stripMathDelimiters(value);
+    wrapper.appendChild(createMathElement(stripped, false));
     return wrapper;
   }
 
