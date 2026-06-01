@@ -5,6 +5,12 @@ let answerVisible = new Set();
 let solutionVisible = new Set();
 let submitted = new Set();
 let selections = new Map();
+let loadedCount = 6;
+
+function onFilterChange() {
+  loadedCount = 6;
+  render();
+}
 
 const sampleQuestion = {
   id: "sample-inline-preview",
@@ -49,13 +55,13 @@ async function init() {
 
 function bindEvents() {
   ["examFilter", "subjectFilter", "yearFilter", "difficultyFilter", "typeFilter", "searchFilter"].forEach((id) => {
-    $(id).addEventListener("input", render);
+    $(id).addEventListener("input", onFilterChange);
   });
   $("resetFilters").addEventListener("click", () => {
     ["examFilter", "subjectFilter", "yearFilter", "difficultyFilter", "typeFilter", "searchFilter"].forEach((id) => {
       $(id).value = "";
     });
-    render();
+    onFilterChange();
   });
 }
 
@@ -103,13 +109,8 @@ function render() {
   const list = $("questionList");
   list.innerHTML = "";
   
-  const CHUNK_SIZE = 6;
-  let index = 0;
-
-  function renderNextChunk() {
-    const chunk = visible.slice(index, index + CHUNK_SIZE);
-    if (!chunk.length) return;
-
+  const chunk = visible.slice(0, loadedCount);
+  if (chunk.length) {
     const fragment = document.createDocumentFragment();
     chunk.forEach((question) => {
       fragment.appendChild(renderQuestion(question));
@@ -118,29 +119,32 @@ function render() {
     
     // Typeset the new content
     typesetMath(list);
-    
-    index += CHUNK_SIZE;
-    updateLoadMoreButton();
   }
+  
+  updateLoadMoreButton(visible.length);
+}
 
-  function updateLoadMoreButton() {
-    let btn = $("loadMoreBtn");
-    if (index < visible.length) {
-      if (!btn) {
-        btn = document.createElement("button");
-        btn.id = "loadMoreBtn";
-        btn.className = "loadMoreBtn";
-        btn.textContent = "Load More Questions";
-        btn.addEventListener("click", renderNextChunk);
-        list.after(btn);
-      }
-      btn.hidden = false;
-    } else if (btn) {
-      btn.hidden = true;
+function updateLoadMoreButton(totalVisible) {
+  let btn = $("loadMoreBtn");
+  if (loadedCount < totalVisible) {
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "loadMoreBtn";
+      btn.className = "loadMoreBtn";
+      btn.textContent = "Load More Questions";
+      btn.addEventListener("click", handleLoadMore);
+      const list = $("questionList");
+      list.after(btn);
     }
+    btn.hidden = false;
+  } else if (btn) {
+    btn.hidden = true;
   }
+}
 
-  renderNextChunk();
+function handleLoadMore() {
+  loadedCount += 6;
+  render();
 }
 
 function renderQuestion(question) {
@@ -446,7 +450,11 @@ function getSelectionSet(id) {
 
 function isCorrect(question, mode) {
   if (mode === "integer") {
-    return normalizeAnswer(selections.get(question.id)) === normalizeAnswer(question.answer?.value);
+    const studentAnswer = normalizeAnswer(selections.get(question.id));
+    const correctAnswers = String(question.answer?.value || "")
+      .split(/\s+or\s+|\s*,\s*|\s*\/\s*|\s*;\s*/i)
+      .map((val) => normalizeAnswer(val));
+    return correctAnswers.includes(studentAnswer);
   }
   const selected = [...getSelectionSet(question.id)].sort();
   const correct = (question.options || [])
