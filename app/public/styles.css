@@ -98,10 +98,20 @@ textarea {
 
 .workspace.blurred,
 .adminShell.blurred {
-  filter: blur(8px);
-  pointer-events: none;
-  opacity: 0.6;
+  filter: blur(10px);
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  opacity: 0.55;
   transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.workspace.blurred .sidebar,
+.workspace.blurred .editor,
+.workspace.blurred .records,
+.workspace.blurred iframe {
+  overflow: hidden !important;
+  pointer-events: none !important;
 }
 
 .resizer {
