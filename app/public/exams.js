@@ -41,6 +41,14 @@ async function init() {
       $("examForm").querySelectorAll("input, button").forEach((control) => {
         control.disabled = actor?.role !== "admin";
       });
+      const shell = document.querySelector(".adminShell");
+      if (shell) {
+        if (actor && actor.role === "admin") {
+          shell.classList.remove("blurred");
+        } else {
+          shell.classList.add("blurred");
+        }
+      }
     }
   });
 

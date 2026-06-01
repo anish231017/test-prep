@@ -449,6 +449,14 @@ async function init() {
       $("questionForm").querySelectorAll("input, select, textarea, button").forEach((control) => {
         control.disabled = !actor;
       });
+      const workspace = document.querySelector(".workspace");
+      if (workspace) {
+        if (actor) {
+          workspace.classList.remove("blurred");
+        } else {
+          workspace.classList.add("blurred");
+        }
+      }
       if (actor) await loadQuestions();
     }
   });

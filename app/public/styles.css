@@ -96,6 +96,14 @@ textarea {
   overflow: hidden;
 }
 
+.workspace.blurred,
+.adminShell.blurred {
+  filter: blur(8px);
+  pointer-events: none;
+  opacity: 0.6;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
 .resizer {
   width: 8px;
   background: transparent;

@@ -85,7 +85,10 @@ const PYQAuth = (() => {
     host.innerHTML = `
       <form class="authForm" data-auth-form>
         <input type="email" data-auth-email placeholder="Editor email" autocomplete="email" required />
-        <input type="password" data-auth-password placeholder="Password" autocomplete="current-password" required />
+        <div class="authPasswordWrapper" style="position: relative; display: flex; align-items: center;">
+          <input type="password" data-auth-password placeholder="Password" autocomplete="current-password" required style="padding-right: 48px;" />
+          <button type="button" data-auth-toggle-password style="position: absolute; right: 8px; border: none; background: none; color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; letter-spacing: 0.05em; padding: 4px;" title="Toggle Password Visibility">Show</button>
+        </div>
         <button type="submit">Sign in</button>
       </form>
       <div class="authStatus" data-auth-status></div>
@@ -93,27 +96,47 @@ const PYQAuth = (() => {
 
     const form = host.querySelector("[data-auth-form]");
     const status = host.querySelector("[data-auth-status]");
+    const toggleBtn = host.querySelector("[data-auth-toggle-password]");
+    const passwordInput = host.querySelector("[data-auth-password]");
+
+    if (toggleBtn && passwordInput) {
+      toggleBtn.addEventListener("click", () => {
+        const isPassword = passwordInput.type === "password";
+        passwordInput.type = isPassword ? "text" : "password";
+        toggleBtn.textContent = isPassword ? "Hide" : "Show";
+      });
+    }
 
     async function refresh() {
       const actor = await me().catch(() => null);
       if (!actor) {
+        host.style.display = "";
         form.hidden = false;
         status.innerHTML = required ? `<span class="authWarning">Sign in to continue.</span>` : "";
+        document.querySelector(".topbar .stats [data-auth-topbar-user]")?.remove();
+        document.querySelector(".topbar .stats [data-auth-topbar-signout]")?.remove();
         onChange?.(null);
         return;
       }
-      form.hidden = true;
-      status.innerHTML = `
-        <span>${actor.email} (${actor.role})</span>
-        <button type="button" data-auth-signout>Sign out</button>
-      `;
-      status.querySelector("[data-auth-signout]").addEventListener("click", () => {
-        signOut();
-        refresh();
-      });
-      if (adminOnly && actor.role !== "admin") {
-        status.insertAdjacentHTML("beforeend", `<span class="authWarning">Admin access required.</span>`);
+      
+      host.style.display = "none";
+      
+      const stats = document.querySelector(".topbar .stats");
+      if (stats) {
+        stats.querySelector("[data-auth-topbar-user]")?.remove();
+        stats.querySelector("[data-auth-topbar-signout]")?.remove();
+        stats.insertAdjacentHTML(
+          "beforeend",
+          `<span data-auth-topbar-user style="color: #d1d5db; font-size: 13px; margin-left: 12px;">${actor.email} (${actor.role})</span>
+           <a href="#" data-auth-topbar-signout style="color: #ff8888; font-weight: 700; text-decoration: none; margin-left: 8px;">Sign out</a>`
+        );
+        stats.querySelector("[data-auth-topbar-signout]").addEventListener("click", (e) => {
+          e.preventDefault();
+          signOut();
+          refresh();
+        });
       }
+      
       onChange?.(actor);
     }
 
